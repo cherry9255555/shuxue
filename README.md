@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 樱花魔法院 · Sakura Mahou Gakuin
 
-## Getting Started
+一个面向中学生（特别为初二复习 + 初三预习设计）的二次元主题数学学习站。
+角色扮演 + 关卡 + 可视化互动 + 公式典藏，让初中数学变成一场结界破除之旅。
 
-First, run the development server:
+## 主要特性
+
+- **角色养成**：4 种二次元立绘 + 自定义名字。等级、星尘（XP）、连击。
+- **结界图谱**：两个章节，10 节课 + 2 个 BOSS。一次函数（初二复习）+ 二次函数（初三预习）。
+- **可视化探索**：拖滑块改 $k, b, a, c$ 看函数图像实时变化。
+- **公式典藏**：学过的公式自动入藏，未学的显示 `???`。
+- **温柔失败**：答错不扣分，3 次内可重试；第 3 次自动展示解析。
+- **零后端**：所有进度存在浏览器 `localStorage`，无登录、无数据收集。
+
+## 技术栈
+
+- Next.js 16.2 (App Router) + React 19.2 + TypeScript
+- Tailwind CSS v4
+- Motion (framer-motion 后续版本)
+- KaTeX（数学公式）
+- 字体：Cormorant Garamond + Cinzel Decorative + Klee One + LXGW WenKai
+
+## 本地开发
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+打开 http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 构建
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## 部署到 Vercel
 
-To learn more about Next.js, take a look at the following resources:
+1. 推送到 GitHub
+2. 在 [vercel.com/new](https://vercel.com/new) 导入这个仓库
+3. Vercel 会自动识别 Next.js 项目，零配置部署
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 目录结构
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+app/
+  page.tsx                    # 主大厅
+  realm/[slug]/page.tsx       # 章节首页
+  realm/[slug]/[lesson]/      # 课程页（lesson = boss 时为 BOSS）
+  codex/page.tsx              # 公式典藏馆
+  profile/page.tsx            # 角色档案
+components/
+  theme/                      # SakuraParticles, Sparkles, Ribbon
+  game/                       # Avatar, XPBar, RealmCard, CharacterCreator, SiteHeader
+  lesson/                     # QuestionCard, FunctionPlot
+  ui/                         # Card, Button, Tex
+content/
+  linear-function.ts          # 章节 1 数据
+  quadratic-function.ts       # 章节 2 数据
+lib/
+  progress.ts                 # localStorage 进度读写
+  katex.ts                    # 公式渲染封装
+  math.ts                     # 数学工具函数
+```
 
-## Deploy on Vercel
+## 增加新章节
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. 在 `content/` 新建 `xxx.ts`，按 `Realm` 类型结构编写（参考已有两个文件）
+2. 在 `content/index.ts` 的 `realms` 数组里加上它
+3. `unlockAfter` 字段填上前置章节 BOSS 的 `key`（如 `"linear/boss"`）就能控制解锁顺序
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 数据 & 隐私
+
+- 所有学习进度只保存在浏览器 `localStorage`（键 `sakura-math.v1`）
+- 不发送任何数据到外部服务器
+- 清除浏览器数据 = 重置进度
